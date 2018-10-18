@@ -29,21 +29,29 @@ namespace KCBS.HT.RollCall
 
         private void frmRollCallConfig_Load(object sender, EventArgs e)
         {
-            // 1. 取得假別對照表
-            ConfigData cdType = K12.Data.School.Configuration["假別對照表"];
-            XDocument docType = XDocument.Parse(cdType.PreviousData.OuterXml);
-            List<XElement> listAbsence = docType.Element("AbsenceList").Elements("Absence").ToList();
+            #region 取得假別對照表
+            List<XElement> listAbsence = new List<XElement>();
+            {
+                //ConfigData cdType = K12.Data.School.Configuration["假別對照表"];
+                //XDocument docType = XDocument.Parse(cdType.PreviousData.OuterXml);
+                //List<XElement> listAbsence = docType.Element("AbsenceList").Elements("Absence").ToList();
+                string sql = "SELECT * FROM list WHERE name = '假別對照表'";
+                DataTable dt = this._qh.Select(sql);
+                XDocument doc = XDocument.Parse("" + dt.Rows[0]["content"]);
+                listAbsence = doc.Element("AbsenceList").Elements("Absence").ToList();
+            }
+            #endregion
 
             #region 初始化班導師點名設定
             {
                 List<string> listSetting = new List<string>();
                 foreach (XElement absence in listAbsence)
                 {
-                    string data = string.Format(@"<Absence Name=""{0}"">true</Absence>", absence.Attribute("Name").Value);
+                    string data = string.Format(@"<Absence Name=""{0}"">false</Absence>", absence.Attribute("Name").Value);
                     listSetting.Add(data);
                 }
 
-                this._initContent = string.Format(@"<AbsenceList CrossDate = ""true"">{0}</AbsenceList>", string.Join("", listSetting));
+                this._initContent = string.Format(@"<AbsenceList CrossDate = ""false"">{0}</AbsenceList>", string.Join("", listSetting));
             }
             #endregion
 
@@ -82,7 +90,7 @@ namespace KCBS.HT.RollCall
 
                 int col = 0;
                 dgvrow.Cells[col++].Value = absence.Attribute("Name").Value;
-                dgvrow.Cells[col++].Value = dicSetting[absence.Attribute("Name").Value];
+                dgvrow.Cells[col++].Value = dicSetting.ContainsKey(absence.Attribute("Name").Value) ? dicSetting[absence.Attribute("Name").Value] : false;
 
                 dataGridViewX1.Rows.Add(dgvrow);
             }
