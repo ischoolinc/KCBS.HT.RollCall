@@ -42,6 +42,22 @@ namespace KCBS.HT.RollCall
             }
             #endregion
 
+            #region 取得節次對照表
+            List<XElement> sessionList = new List<XElement>();
+            {
+                string findSessionSql = @"
+SELECT 
+    *
+FROM 
+    list
+WHERE
+    name = '節次對照表'";
+                DataTable dt = this._qh.Select(findSessionSql);
+                XDocument xdoc = XDocument.Parse("" + dt.Rows[0]["content"]);
+                sessionList = xdoc.Element("Periods").Elements("Period").ToList();
+            }
+            #endregion
+
             #region 初始化班導師點名設定
             {
                 List<string> listSetting = new List<string>();
@@ -52,6 +68,14 @@ namespace KCBS.HT.RollCall
                 }
 
                 this._initContent = string.Format(@"<AbsenceList CrossDate = ""false"">{0}</AbsenceList>", string.Join("", listSetting));
+
+                listSetting = new List<string>();
+                foreach (XElement session in sessionList)
+                {
+                    string data = string.Format(@"<Period Name=""{0}"" >一般</Period>", session.Attribute("Name").Value);
+                    listSetting.Add(data);
+                }
+                this._initContent += string.Format(@"<PeriodList>{0}</PeriodList>", string.Join("", listSetting));
             }
             #endregion
 
@@ -63,37 +87,88 @@ namespace KCBS.HT.RollCall
                 DataTable dt = GetConfig();
                 if (dt.Rows.Count > 0)
                 {
-                    docRollCall = XDocument.Parse("" + dt.Rows[0]["content"]);
+                    //2019/4/3 俊緯更新 為符合新的content的格式，所以手動加上<root>
+                    docRollCall = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
                 }
                 else
                 {
                     dt = insertConfig();
-                    docRollCall = XDocument.Parse("" + dt.Rows[0]["content"]);
+                    docRollCall = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
                 }
-                crossDate = bool.Parse(docRollCall.Element("AbsenceList").Attribute("CrossDate").Value);
-                List<XElement> listSetting = docRollCall.Element("AbsenceList").Elements("Absence").ToList();
+                crossDate = bool.Parse(docRollCall.Element("root").Element("AbsenceList").Attribute("CrossDate").Value);
+                List<XElement> listSetting = docRollCall.Element("root").Element("AbsenceList").Elements("Absence").ToList();
                 foreach (XElement data in listSetting)
                 {
                     dicSetting.Add(data.Attribute("Name").Value, bool.Parse(data.Value));
                 }
-            } 
+            }
             #endregion
 
-            // Init ComboBox
+            #region 取得班導師節次設定
+            Dictionary<string, string> sessionSetDic = new Dictionary<string, string>();
+            {
+                XDocument sessionDoc = new XDocument();
+                DataTable dt = GetConfig();
+                if (dt.Rows.Count > 0)
+                {
+                    sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
+                }
+                else
+                {
+                    dt = insertConfig();
+                    sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
+                }
+                List<XElement> settingList = sessionDoc.Element("root").Element("PeriodList").Elements("Period").ToList();
+                foreach (XElement xElement in settingList)
+                {
+                    sessionSetDic.Add("" + xElement.Attribute("Name").Value, "" + xElement.Value);
+                }
+            }
+            #endregion
+
+            // Init CheckBox
             ckbxCrossDate.Checked = crossDate;
 
+            #region 填資料進dataGridView
             // Init DataGridView
+            // Absence
             foreach (XElement absence in listAbsence)
             {
                 DataGridViewRow dgvrow = new DataGridViewRow();
-                dgvrow.CreateCells(dataGridViewX1);
+                dgvrow.CreateCells(dgvSetLeaveCategory);
 
                 int col = 0;
                 dgvrow.Cells[col++].Value = absence.Attribute("Name").Value;
                 dgvrow.Cells[col++].Value = dicSetting.ContainsKey(absence.Attribute("Name").Value) ? dicSetting[absence.Attribute("Name").Value] : false;
 
-                dataGridViewX1.Rows.Add(dgvrow);
+                dgvSetLeaveCategory.Rows.Add(dgvrow);
             }
+            // Session
+            List<string> sessionSetCategoryList = new List<string>()
+            {
+                 "一般"
+                ,"手動"
+                ,"唯讀"
+                ,"隱藏"
+            };
+            foreach (XElement session in sessionList)
+            {
+                DataGridViewRow dgvRow = new DataGridViewRow();
+                dgvRow.CreateCells(dgvSetSession);
+
+                int col = 0;
+                dgvRow.Cells[col++].Value = session.Attribute("Name").Value;
+                string sessionSetCategory = sessionSetDic.ContainsKey(session.Attribute("Name").Value) ? sessionSetDic[session.Attribute("Name").Value] : "";
+                foreach (string category in sessionSetCategoryList)
+                {
+                    ((DataGridViewComboBoxCell)dgvRow.Cells[col]).Items.Add(category);
+                }
+
+                ((DataGridViewComboBoxCell)dgvRow.Cells[col]).Style.NullValue = sessionSetCategory;
+
+                dgvSetSession.Rows.Add(dgvRow);
+            } 
+            #endregion
         }
 
         private DataTable GetConfig()
@@ -132,29 +207,37 @@ SELECT * FROM insert_data
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            List<string> listDataRow = new List<string>();
+            List<string> absenceListDataRow = new List<string>();
+            List<string> sessionListDataRow = new List<string>();
 
-            foreach (DataGridViewRow dgvrow in dataGridViewX1.Rows)
+            foreach (DataGridViewRow dgvrow in dgvSetLeaveCategory.Rows)
             {
-                string data = string.Format(@"<Absence Name=""{0}"">{1}</Absence>", dgvrow.Cells[0].Value,dgvrow.Cells[1].Value);
-                listDataRow.Add(data);
+                string data = string.Format(@"<Absence Name=""{0}"">{1}</Absence>", dgvrow.Cells[0].Value, dgvrow.Cells[1].Value);
+                absenceListDataRow.Add(data);
             }
 
-            string content = string.Format(@"<AbsenceList CrossDate = ""{0}"">{1}</AbsenceList>",ckbxCrossDate.Checked,string.Join("",listDataRow));
+            foreach (DataGridViewRow dgvRow in dgvSetSession.Rows)
+            {
+                string data = string.Format(@"<Period Name=""{0}"">{1}</Period>", dgvRow.Cells[0].Value, dgvRow.Cells[1].FormattedValue);
+                sessionListDataRow.Add(data);
+            }
+
+            string content = string.Format(@"<AbsenceList CrossDate = ""{0}"">{1}</AbsenceList>", ckbxCrossDate.Checked, string.Join("", absenceListDataRow));
+            content += string.Format(@"<PeriodList>{0}</PeriodList>", string.Join("", sessionListDataRow));
 
             string sql = string.Format(@"
 UPDATE list SET
     content = '{0}'
 WHERE
     name = '{1}'
-            ",content,this._configName);
+            ", content, this._configName);
 
             try
             {
                 this._up.Execute(sql);
                 MsgBox.Show("資料儲存成功!");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MsgBox.Show(ex.Message);
             }
