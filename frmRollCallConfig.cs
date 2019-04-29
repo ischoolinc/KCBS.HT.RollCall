@@ -21,7 +21,7 @@ namespace KCBS.HT.RollCall
         private string _initContent = "";
         private QueryHelper _qh = new QueryHelper();
         private UpdateHelper _up = new UpdateHelper();
-
+        private string _defaultPeriodListString = "";
         public frmRollCallConfig()
         {
             InitializeComponent();
@@ -112,17 +112,31 @@ WHERE
                 if (dt.Rows.Count > 0)
                 {
                     sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
+                    //當班導師點名設定 沒有periodList 的Element 的時候 要將 default periodList 設定加進去
+                    if (sessionDoc.Element("root").Element("PeriodList") == null)
+                    {
+                        List<string> listSetting = new List<string>();
+                        foreach (XElement session in sessionList)
+                        {
+                            string data = string.Format(@"<Period Name=""{0}"" >一般</Period>", session.Attribute("Name").Value);
+                            listSetting.Add(data);
+                        }
+                        this._defaultPeriodListString = string.Format(@"<PeriodList>{0}</PeriodList>", string.Join("", listSetting));
+                        sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"]+this._defaultPeriodListString + "</root>");
+                    }
                 }
                 else
                 {
                     dt = insertConfig();
                     sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
                 }
+                
                 List<XElement> settingList = sessionDoc.Element("root").Element("PeriodList").Elements("Period").ToList();
                 foreach (XElement xElement in settingList)
                 {
                     sessionSetDic.Add("" + xElement.Attribute("Name").Value, "" + xElement.Value);
                 }
+               
             }
             #endregion
 
