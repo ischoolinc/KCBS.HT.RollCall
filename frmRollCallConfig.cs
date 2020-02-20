@@ -12,6 +12,7 @@ using K12.Data.Configuration;
 using System.Xml.Linq;
 using FISCA.Data;
 using K12.Data;
+using FISCA.LogAgent;
 
 namespace KCBS.HT.RollCall
 {
@@ -22,6 +23,11 @@ namespace KCBS.HT.RollCall
         private QueryHelper _qh = new QueryHelper();
         private UpdateHelper _up = new UpdateHelper();
         private string _defaultPeriodListString = "";
+        private StringBuilder _sbLogBefore = new StringBuilder();
+        private StringBuilder _snLogBefore = new StringBuilder();
+        private StringBuilder _sbLogAfter = new StringBuilder();
+        private StringBuilder _snLogAfter = new StringBuilder();
+        private List<XElement> listAbsenceBf = new List<XElement>();
         public frmRollCallConfig()
         {
             InitializeComponent();
@@ -39,6 +45,7 @@ namespace KCBS.HT.RollCall
                 DataTable dt = this._qh.Select(sql);
                 XDocument doc = XDocument.Parse("" + dt.Rows[0]["content"]);
                 listAbsence = doc.Element("AbsenceList").Elements("Absence").ToList();
+                listAbsenceBf = listAbsence;
             }
             #endregion
 
@@ -156,6 +163,19 @@ WHERE
                 dgvrow.Cells[col++].Value = dicSetting.ContainsKey(absence.Attribute("Name").Value) ? dicSetting[absence.Attribute("Name").Value] : false;
 
                 dgvSetLeaveCategory.Rows.Add(dgvrow);
+                
+                _sbLogBefore.Append("缺曠類別「" + absence.Attribute("Name").Value + "」，" + "導師是否可以點名「");
+                if (dicSetting.ContainsKey(absence.Attribute("Name").Value))
+                {
+                    _sbLogBefore.Append(dicSetting[absence.Attribute("Name").Value] ? "是" : "否" );
+                }
+                else
+                {
+                    _sbLogBefore.Append("否");
+                }
+                _sbLogBefore.AppendLine("」。");  //導師原本能點的缺曠類別
+
+            
             }
             // Session
             List<string> sessionSetCategoryList = new List<string>()
@@ -181,9 +201,18 @@ WHERE
                 ((DataGridViewComboBoxCell)dgvRow.Cells[col]).Style.NullValue = sessionSetCategory;
 
                 dgvSetSession.Rows.Add(dgvRow);
-            } 
+
+                _snLogBefore.AppendLine("原先導師第「" + session.Attribute("Name").Value + "」幾節可點狀態「" + sessionSetDic[session.Attribute("Name").Value] + "」。");
+  //導師原本能點的缺曠類別
+
+            }
             #endregion
+
+
+
         }
+
+
 
         private DataTable GetConfig()
         {
@@ -219,7 +248,10 @@ SELECT * FROM insert_data
             return this._qh.Select(sql);
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+
+
+
+        private void btnSave_Click (object sender, EventArgs e) 
         {
             List<string> absenceListDataRow = new List<string>();
             List<string> sessionListDataRow = new List<string>();
@@ -227,28 +259,55 @@ SELECT * FROM insert_data
             foreach (DataGridViewRow dgvrow in dgvSetLeaveCategory.Rows)
             {
                 string data = string.Format(@"<Absence Name=""{0}"">{1}</Absence>", dgvrow.Cells[0].Value, dgvrow.Cells[1].Value);
+
                 absenceListDataRow.Add(data);
+
+                //_sbLogAfter.AppendLine("缺曠類別「" + dgvrow.Cells[0].Value + "」，" + "導師是否可以點名「" + dgvrow.Cells[1].Value + "」。");
+
+                _sbLogAfter.Append("缺曠類別「" + dgvrow.Cells[0].Value + "」，" + "導師是否可以點名「");
+
+                if ((bool)dgvrow.Cells[1].Value)
+                {
+                    _sbLogAfter.Append((bool)dgvrow.Cells[1].Value ? "是" : "否");
+                }
+                else
+                {
+                    _sbLogAfter.Append("否");
+                };
+                _sbLogAfter.AppendLine("」。");
+
             }
 
             foreach (DataGridViewRow dgvRow in dgvSetSession.Rows)
             {
                 string data = string.Format(@"<Period Name=""{0}"">{1}</Period>", dgvRow.Cells[0].Value, dgvRow.Cells[1].FormattedValue);
                 sessionListDataRow.Add(data);
+
+                _snLogAfter.AppendLine("導師第「" + dgvRow.Cells[0].Value + "」幾節可點狀態「" + dgvRow.Cells[1].FormattedValue + "」。");
             }
 
-            string content = string.Format(@"<AbsenceList CrossDate = ""{0}"">{1}</AbsenceList>", ckbxCrossDate.Checked, string.Join("", absenceListDataRow));
+
+
+                string content = string.Format(@"<AbsenceList CrossDate = ""{0}"">{1}</AbsenceList>", ckbxCrossDate.Checked, string.Join("", absenceListDataRow));
             content += string.Format(@"<PeriodList>{0}</PeriodList>", string.Join("", sessionListDataRow));
 
             string sql = string.Format(@"
-UPDATE list SET
-    content = '{0}'
-WHERE
-    name = '{1}'
+                                        UPDATE list SET
+                                            content = '{0}'
+                                        WHERE
+                                            name = '{1}'
             ", content, this._configName);
+
+            
+
 
             try
             {
                 this._up.Execute(sql);
+                ApplicationLog.Log("導師原始課堂點名類別節數設定調整", "缺曠類別: \n"+_sbLogBefore.ToString()+"\n" 
+                    + "節數: \n"+ _snLogBefore.ToString() + "========================== \n"+ "調整後缺曠類別: \n"+ _sbLogAfter.ToString() + "\n" + "調整後節數: \n" + _snLogAfter.ToString());
+
+
                 MsgBox.Show("資料儲存成功!");
             }
             catch (Exception ex)
