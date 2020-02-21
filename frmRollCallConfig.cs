@@ -262,7 +262,6 @@ SELECT * FROM insert_data
 
                 absenceListDataRow.Add(data);
 
-                //_sbLogAfter.AppendLine("缺曠類別「" + dgvrow.Cells[0].Value + "」，" + "導師是否可以點名「" + dgvrow.Cells[1].Value + "」。");
 
                 _sbLogAfter.Append("缺曠類別「" + dgvrow.Cells[0].Value + "」，" + "導師是否可以點名「");
 
@@ -304,7 +303,7 @@ SELECT * FROM insert_data
             try
             {
                 this._up.Execute(sql);
-                ApplicationLog.Log("導師原始課堂點名類別節數設定調整", "缺曠類別: \n"+_sbLogBefore.ToString()+"\n" 
+                ApplicationLog.Log("導師課堂點名", "修改", "缺曠類別: \n"+_sbLogBefore.ToString()+"\n" 
                     + "節數: \n"+ _snLogBefore.ToString() + "========================== \n"+ "調整後缺曠類別: \n"+ _sbLogAfter.ToString() + "\n" + "調整後節數: \n" + _snLogAfter.ToString());
 
 
