@@ -202,8 +202,9 @@ WHERE
 
                 dgvSetSession.Rows.Add(dgvRow);
 
-                _snLogBefore.AppendLine("原先導師第「" + session.Attribute("Name").Value + "」幾節可點狀態「" + sessionSetDic[session.Attribute("Name").Value] + "」。");
-  //導師原本能點的缺曠類別
+                _snLogBefore.AppendLine("原先導師第「" + session.Attribute("Name").Value + "」幾節可點狀態「" + sessionSetCategory + "」。");
+                
+                //導師原本能點的缺曠類別
 
             }
             #endregion
