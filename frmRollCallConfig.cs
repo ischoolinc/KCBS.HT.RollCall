@@ -89,6 +89,7 @@ WHERE
             #region 取得班導師可點假別設定
             Dictionary<string, bool> dicSetting = new Dictionary<string, bool>();
             bool crossDate;
+            bool CrossDateOnlyRead;
             {
                 XDocument docRollCall = new XDocument();
                 DataTable dt = GetConfig();
@@ -103,6 +104,7 @@ WHERE
                     docRollCall = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
                 }
                 crossDate = bool.Parse(docRollCall.Element("root").Element("AbsenceList").Attribute("CrossDate").Value);
+                CrossDateOnlyRead = bool.Parse(docRollCall.Element("root").Element("AbsenceList").Attribute("CrossDateOnlyRead").Value);
                 List<XElement> listSetting = docRollCall.Element("root").Element("AbsenceList").Elements("Absence").ToList();
                 foreach (XElement data in listSetting)
                 {
@@ -129,7 +131,7 @@ WHERE
                             listSetting.Add(data);
                         }
                         this._defaultPeriodListString = string.Format(@"<PeriodList>{0}</PeriodList>", string.Join("", listSetting));
-                        sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"]+this._defaultPeriodListString + "</root>");
+                        sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"] + this._defaultPeriodListString + "</root>");
                     }
                 }
                 else
@@ -137,19 +139,19 @@ WHERE
                     dt = insertConfig();
                     sessionDoc = XDocument.Parse("<root>" + dt.Rows[0]["content"] + "</root>");
                 }
-                
+
                 List<XElement> settingList = sessionDoc.Element("root").Element("PeriodList").Elements("Period").ToList();
                 foreach (XElement xElement in settingList)
                 {
                     sessionSetDic.Add("" + xElement.Attribute("Name").Value, "" + xElement.Value);
                 }
-               
+
             }
             #endregion
 
             // Init CheckBox
             ckbxCrossDate.Checked = crossDate;
-
+            cbCrossDateOnlyRead.Checked = CrossDateOnlyRead;
             #region 填資料進dataGridView
             // Init DataGridView
             // Absence
@@ -163,11 +165,11 @@ WHERE
                 dgvrow.Cells[col++].Value = dicSetting.ContainsKey(absence.Attribute("Name").Value) ? dicSetting[absence.Attribute("Name").Value] : false;
 
                 dgvSetLeaveCategory.Rows.Add(dgvrow);
-                
+
                 _sbLogBefore.Append("缺曠類別「" + absence.Attribute("Name").Value + "」，" + "導師是否可以點名「");
                 if (dicSetting.ContainsKey(absence.Attribute("Name").Value))
                 {
-                    _sbLogBefore.Append(dicSetting[absence.Attribute("Name").Value] ? "是" : "否" );
+                    _sbLogBefore.Append(dicSetting[absence.Attribute("Name").Value] ? "是" : "否");
                 }
                 else
                 {
@@ -175,7 +177,7 @@ WHERE
                 }
                 _sbLogBefore.AppendLine("」。");  //導師原本能點的缺曠類別
 
-            
+
             }
             // Session
             List<string> sessionSetCategoryList = new List<string>()
@@ -203,7 +205,7 @@ WHERE
                 dgvSetSession.Rows.Add(dgvRow);
 
                 _snLogBefore.AppendLine("原先導師第「" + session.Attribute("Name").Value + "」幾節可點狀態「" + sessionSetCategory + "」。");
-                
+
                 //導師原本能點的缺曠類別
 
             }
@@ -252,7 +254,7 @@ SELECT * FROM insert_data
 
 
 
-        private void btnSave_Click (object sender, EventArgs e) 
+        private void btnSave_Click(object sender, EventArgs e)
         {
             List<string> absenceListDataRow = new List<string>();
             List<string> sessionListDataRow = new List<string>();
@@ -273,7 +275,8 @@ SELECT * FROM insert_data
                 else
                 {
                     _sbLogAfter.Append("否");
-                };
+                }
+                ;
                 _sbLogAfter.AppendLine("」。");
 
             }
@@ -288,7 +291,7 @@ SELECT * FROM insert_data
 
 
 
-                string content = string.Format(@"<AbsenceList CrossDate = ""{0}"">{1}</AbsenceList>", ckbxCrossDate.Checked, string.Join("", absenceListDataRow));
+            string content = string.Format(@"<AbsenceList CrossDate = ""{0}"" CrossDateOnlyRead = ""{1}"">{2}</AbsenceList>", ckbxCrossDate.Checked, cbCrossDateOnlyRead.Checked, string.Join("", absenceListDataRow));
             content += string.Format(@"<PeriodList>{0}</PeriodList>", string.Join("", sessionListDataRow));
 
             string sql = string.Format(@"
@@ -298,14 +301,14 @@ SELECT * FROM insert_data
                                             name = '{1}'
             ", content, this._configName);
 
-            
+
 
 
             try
             {
                 this._up.Execute(sql);
-                ApplicationLog.Log("導師課堂點名", "修改", "缺曠類別: \n"+_sbLogBefore.ToString()+"\n" 
-                    + "節數: \n"+ _snLogBefore.ToString() + "========================== \n"+ "調整後缺曠類別: \n"+ _sbLogAfter.ToString() + "\n" + "調整後節數: \n" + _snLogAfter.ToString());
+                ApplicationLog.Log("導師課堂點名", "修改", "缺曠類別: \n" + _sbLogBefore.ToString() + "\n"
+                    + "節數: \n" + _snLogBefore.ToString() + "========================== \n" + "調整後缺曠類別: \n" + _sbLogAfter.ToString() + "\n" + "調整後節數: \n" + _snLogAfter.ToString());
 
 
                 MsgBox.Show("資料儲存成功!");
@@ -319,6 +322,15 @@ SELECT * FROM insert_data
         private void btnLeave_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            MsgBox.Show(@"說明：
+一般: 班導師點全天、點單節都會作用
+手動: 班導師只有點單節會作用。
+唯讀: 班導師僅能檢視，無法修改新增
+隱藏: 班導師無法檢視");
         }
     }
 }

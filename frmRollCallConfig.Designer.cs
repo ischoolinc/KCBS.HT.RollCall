@@ -39,13 +39,10 @@
             this.btnLeave = new DevComponents.DotNetBar.ButtonX();
             this.ckbxCrossDate = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.dgvSetSession = new DevComponents.DotNetBar.Controls.DataGridViewX();
-            this.labelX1 = new DevComponents.DotNetBar.LabelX();
-            this.labelX2 = new DevComponents.DotNetBar.LabelX();
-            this.labelX3 = new DevComponents.DotNetBar.LabelX();
-            this.labelX4 = new DevComponents.DotNetBar.LabelX();
-            this.labelX5 = new DevComponents.DotNetBar.LabelX();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DataGridViewComboBoxColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.cbCrossDateOnlyRead = new DevComponents.DotNetBar.Controls.CheckBoxX();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSetLeaveCategory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSetSession)).BeginInit();
             this.SuspendLayout();
@@ -65,7 +62,7 @@
             this.Column2});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft JhengHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("微軟正黑體", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
@@ -76,7 +73,7 @@
             this.dgvSetLeaveCategory.Name = "dgvSetLeaveCategory";
             this.dgvSetLeaveCategory.RowHeadersVisible = false;
             this.dgvSetLeaveCategory.RowTemplate.Height = 24;
-            this.dgvSetLeaveCategory.Size = new System.Drawing.Size(250, 249);
+            this.dgvSetLeaveCategory.Size = new System.Drawing.Size(277, 251);
             this.dgvSetLeaveCategory.TabIndex = 0;
             // 
             // Column1
@@ -99,7 +96,7 @@
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.BackColor = System.Drawing.Color.Transparent;
             this.btnSave.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.btnSave.Location = new System.Drawing.Point(648, 296);
+            this.btnSave.Location = new System.Drawing.Point(384, 307);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
@@ -113,7 +110,7 @@
             this.btnLeave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLeave.BackColor = System.Drawing.Color.Transparent;
             this.btnLeave.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.btnLeave.Location = new System.Drawing.Point(729, 296);
+            this.btnLeave.Location = new System.Drawing.Point(465, 307);
             this.btnLeave.Name = "btnLeave";
             this.btnLeave.Size = new System.Drawing.Size(75, 23);
             this.btnLeave.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
@@ -123,16 +120,17 @@
             // 
             // ckbxCrossDate
             // 
+            this.ckbxCrossDate.AutoSize = true;
             this.ckbxCrossDate.BackColor = System.Drawing.Color.Transparent;
             // 
             // 
             // 
             this.ckbxCrossDate.BackgroundStyle.Class = "";
             this.ckbxCrossDate.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.ckbxCrossDate.Font = new System.Drawing.Font("Microsoft JhengHei", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.ckbxCrossDate.Font = new System.Drawing.Font("微軟正黑體", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.ckbxCrossDate.Location = new System.Drawing.Point(12, 12);
             this.ckbxCrossDate.Name = "ckbxCrossDate";
-            this.ckbxCrossDate.Size = new System.Drawing.Size(235, 23);
+            this.ckbxCrossDate.Size = new System.Drawing.Size(174, 21);
             this.ckbxCrossDate.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
             this.ckbxCrossDate.TabIndex = 3;
             this.ckbxCrossDate.Text = "開放線上補點及預先請假";
@@ -143,8 +141,9 @@
             this.dgvSetSession.AllowUserToDeleteRows = false;
             this.dgvSetSession.AllowUserToResizeColumns = false;
             this.dgvSetSession.AllowUserToResizeRows = false;
-            this.dgvSetSession.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.dgvSetSession.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvSetSession.BackgroundColor = System.Drawing.Color.White;
             this.dgvSetSession.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvSetSession.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -152,7 +151,7 @@
             this.DataGridViewComboBoxColumn});
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft JhengHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("微軟正黑體", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.ControlText;
@@ -163,93 +162,8 @@
             this.dgvSetSession.Name = "dgvSetSession";
             this.dgvSetSession.RowHeadersVisible = false;
             this.dgvSetSession.RowTemplate.Height = 24;
-            this.dgvSetSession.Size = new System.Drawing.Size(250, 249);
+            this.dgvSetSession.Size = new System.Drawing.Size(245, 251);
             this.dgvSetSession.TabIndex = 4;
-            // 
-            // labelX1
-            // 
-            this.labelX1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelX1.AutoSize = true;
-            this.labelX1.BackColor = System.Drawing.Color.Transparent;
-            // 
-            // 
-            // 
-            this.labelX1.BackgroundStyle.Class = "";
-            this.labelX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX1.Location = new System.Drawing.Point(570, 68);
-            this.labelX1.Name = "labelX1";
-            this.labelX1.Size = new System.Drawing.Size(217, 20);
-            this.labelX1.TabIndex = 6;
-            this.labelX1.Text = "一般: 班導師點全天、點單節都會作用";
-            // 
-            // labelX2
-            // 
-            this.labelX2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelX2.AutoSize = true;
-            this.labelX2.BackColor = System.Drawing.Color.Transparent;
-            // 
-            // 
-            // 
-            this.labelX2.BackgroundStyle.Class = "";
-            this.labelX2.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX2.Location = new System.Drawing.Point(570, 96);
-            this.labelX2.Name = "labelX2";
-            this.labelX2.Size = new System.Drawing.Size(191, 20);
-            this.labelX2.TabIndex = 7;
-            this.labelX2.Text = "手動: 班導師只有點單節會作用。";
-            // 
-            // labelX3
-            // 
-            this.labelX3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelX3.AutoSize = true;
-            this.labelX3.BackColor = System.Drawing.Color.Transparent;
-            // 
-            // 
-            // 
-            this.labelX3.BackgroundStyle.Class = "";
-            this.labelX3.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX3.Location = new System.Drawing.Point(570, 124);
-            this.labelX3.Name = "labelX3";
-            this.labelX3.Size = new System.Drawing.Size(217, 20);
-            this.labelX3.TabIndex = 8;
-            this.labelX3.Text = "唯讀: 班導師僅能檢視，無法修改新增";
-            // 
-            // labelX4
-            // 
-            this.labelX4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelX4.AutoSize = true;
-            this.labelX4.BackColor = System.Drawing.Color.Transparent;
-            // 
-            // 
-            // 
-            this.labelX4.BackgroundStyle.Class = "";
-            this.labelX4.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX4.Location = new System.Drawing.Point(570, 152);
-            this.labelX4.Name = "labelX4";
-            this.labelX4.Size = new System.Drawing.Size(126, 20);
-            this.labelX4.TabIndex = 9;
-            this.labelX4.Text = "隱藏: 班導師無法檢視";
-            // 
-            // labelX5
-            // 
-            this.labelX5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelX5.AutoSize = true;
-            this.labelX5.BackColor = System.Drawing.Color.Transparent;
-            // 
-            // 
-            // 
-            this.labelX5.BackgroundStyle.Class = "";
-            this.labelX5.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX5.Location = new System.Drawing.Point(558, 40);
-            this.labelX5.Name = "labelX5";
-            this.labelX5.Size = new System.Drawing.Size(41, 20);
-            this.labelX5.TabIndex = 5;
-            this.labelX5.Text = "說明：";
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -267,16 +181,44 @@
             this.DataGridViewComboBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.DataGridViewComboBoxColumn.Width = 120;
             // 
+            // cbCrossDateOnlyRead
+            // 
+            this.cbCrossDateOnlyRead.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbCrossDateOnlyRead.AutoSize = true;
+            this.cbCrossDateOnlyRead.BackColor = System.Drawing.Color.Transparent;
+            // 
+            // 
+            // 
+            this.cbCrossDateOnlyRead.BackgroundStyle.Class = "";
+            this.cbCrossDateOnlyRead.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.cbCrossDateOnlyRead.Font = new System.Drawing.Font("微軟正黑體", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.cbCrossDateOnlyRead.Location = new System.Drawing.Point(295, 12);
+            this.cbCrossDateOnlyRead.Name = "cbCrossDateOnlyRead";
+            this.cbCrossDateOnlyRead.Size = new System.Drawing.Size(161, 21);
+            this.cbCrossDateOnlyRead.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.cbCrossDateOnlyRead.TabIndex = 10;
+            this.cbCrossDateOnlyRead.Text = "開放瀏覽點名請假狀況";
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.BackColor = System.Drawing.Color.Transparent;
+            this.linkLabel1.Location = new System.Drawing.Point(12, 307);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(138, 17);
+            this.linkLabel1.TabIndex = 11;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "【節次導師可選】說明";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
             // frmRollCallConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(816, 331);
-            this.Controls.Add(this.labelX5);
-            this.Controls.Add(this.labelX4);
-            this.Controls.Add(this.labelX3);
-            this.Controls.Add(this.labelX2);
-            this.Controls.Add(this.labelX1);
+            this.ClientSize = new System.Drawing.Size(558, 340);
+            this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.cbCrossDateOnlyRead);
             this.Controls.Add(this.dgvSetSession);
             this.Controls.Add(this.ckbxCrossDate);
             this.Controls.Add(this.btnLeave);
@@ -302,12 +244,9 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column2;
         private DevComponents.DotNetBar.Controls.CheckBoxX ckbxCrossDate;
         private DevComponents.DotNetBar.Controls.DataGridViewX dgvSetSession;
-        private DevComponents.DotNetBar.LabelX labelX1;
-        private DevComponents.DotNetBar.LabelX labelX2;
-        private DevComponents.DotNetBar.LabelX labelX3;
-        private DevComponents.DotNetBar.LabelX labelX4;
-        private DevComponents.DotNetBar.LabelX labelX5;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewComboBoxColumn DataGridViewComboBoxColumn;
+        private DevComponents.DotNetBar.Controls.CheckBoxX cbCrossDateOnlyRead;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }
